@@ -3,51 +3,214 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard IoT - Deteksi Dini Penyumbatan Drainase Tertutup</title>
+  <title>Deteksi Dini Penyumbatan Drainase Tertutup Berbasis Internet of Things</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            brand: { 50: '#f0f9ff', 500: '#0284c7', 600: '#0369a1', 700: '#075985' }
+            brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' }
           }
         }
       }
     }
   </script>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased">
-  <div class="max-w-6xl mx-auto px-4 py-8 space-y-8">
-    
-    <!-- HEADER -->
+<body class="bg-slate-50 text-slate-800 font-sans antialiased p-4 md:p-8">
+  <div class="max-w-6xl mx-auto space-y-6">
+
+    <!-- 1. HEADER REAL-TIME -->
     <header class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-      <div>
-        <h1 class="text-2xl font-bold text-slate-900">Deteksi Dini Penyumbatan Drainase Tertutup</h1>
-        <p class="text-slate-500 text-sm mt-1">Sistem Pemantauan Berbasis Internet of Things (IoT)</p>
-      </div>
-      <div class="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full text-xs font-semibold">
-        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        Sistem Online
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-500 text-xl font-bold">
+          ≈
+        </div>
+        <div>
+          <span class="text-xs font-bold text-blue-500 tracking-wider uppercase">Sistem IoT · Monitoring Real-Time</span>
+          <h1 class="text-xl md:text-2xl font-bold text-slate-900 mt-0.5">Deteksi Dini Penyumbatan Drainase Tertutup Berbasis Internet of Things</h1>
+        </div>
       </div>
     </header>
 
-    <!-- KONTEN UTAMA DASHBOARD SENSOR -->
-    <main class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tinggi Air</h3>
-        <p class="text-3xl font-extrabold text-slate-900">-- <span class="text-sm font-normal text-slate-500">cm</span></p>
-      </div>
-      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Debit Air</h3>
-        <p class="text-3xl font-extrabold text-slate-900">-- <span class="text-sm font-normal text-slate-500">L/min</span></p>
-      </div>
-      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Status Penyumbatan</h3>
-        <p class="text-3xl font-extrabold text-emerald-600">NORMAL</p>
-      </div>
-    </main>
+    <!-- BADGES STATUS -->
+    <div class="flex flex-wrap items-center gap-3">
+      <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-700 shadow-sm">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span id="txt-timestamp">11/11/2026, 21.22.56</span>
+      </span>
+      <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-blue-50 border border-blue-200 text-blue-600">
+        Demo Mode · ESP32 Simulator
+      </span>
+      <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+        Hardware: menunggu
+      </span>
+    </div>
 
-  </div>
-</body>
-</html>
+    <!-- 2. KONEKSI BLYNK REST API -->
+    <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative">
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900">Koneksi Blynk REST API</h2>
+          <p class="text-slate-500 text-sm mt-0.5">Ambil data real-time dari ESP32 melalui Blynk Cloud. Tempel Auth Token perangkat, lalu sambungkan.</p>
+        </div>
+        <span class="text-xs text-slate-400">Belum tersambung</span>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Auth Token</label>
+          <input type="text" placeholder="Tempel Auth Token Blynk di sini" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:border-blue-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Server Blynk</label>
+          <select class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:border-blue-500">
+            <option>Singapore (sgp1) — disarankan</option>
+          </select>
+        </div>
+
+        <div class="flex gap-3">
+          <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-xl text-sm transition">Sambungkan ESP32</button>
+          <button class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-2.5 px-4 rounded-xl text-sm transition">Demo</button>
+        </div>
+      </div>
+
+      <div class="mt-4 p-4 rounded-xl bg-slate-50 text-xs text-slate-600 space-y-2 border border-slate-100">
+        <p class="font-semibold text-slate-800">Pemetaan Virtual Pin ESP32 → Dashboard</p>
+        <p class="text-slate-500">V0 jarak HC-SR04 (cm) · V1 tinggi air (cm) · V2 persentase (%) · V3 debit YF-S201 (L/min) · V4 status (opsional: AMAN / WASPADA / TERSUMBAT)</p>
+        <p class="font-mono bg-white p-2 rounded border border-slate-200 text-slate-700 overflow-x-auto">Blynk.virtualWrite(V0, jarak); Blynk.virtualWrite(V1, tinggi); Blynk.virtualWrite(V2, persen); Blynk.virtualWrite(V3, debit);</p>
+      </div>
+    </section>
+
+    <!-- 3. BANNER STATUS SISTEM SAAT INI -->
+    <section class="bg-emerald-50 border border-emerald-100 p-6 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-emerald-600 shadow-sm text-2xl font-bold">
+          🛡️
+        </div>
+        <div>
+          <span class="text-xs font-bold text-emerald-600 tracking-wider uppercase">STATUS SISTEM SAAT INI</span>
+          <h2 class="text-2xl font-extrabold text-emerald-900 mt-0.5">Aman</h2>
+          <p class="text-sm text-emerald-700">Air lancar, indikator LED hijau aktif.</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4 text-xs font-semibold text-slate-500">
+        <div class="text-center">
+          <p>LED Hijau</p>
+          <span class="inline-block w-4 h-4 rounded-full bg-emerald-500 mt-1 shadow"></span>
+        </div>
+        <div class="text-center">
+          <p>LED Kuning</p>
+          <span class="inline-block w-4 h-4 rounded-full bg-slate-200 mt-1"></span>
+        </div>
+        <div class="text-center">
+          <p>LED Merah</p>
+          <span class="inline-block w-4 h-4 rounded-full bg-slate-200 mt-1"></span>
+        </div>
+        <div class="text-center">
+          <p>Buzzer</p>
+          <span class="inline-block p-1.5 rounded-full bg-slate-100 mt-1 text-slate-400">🔕</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. GRID KARTU SENSOR -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div class="flex justify-between items-start">
+          <span class="text-sm font-medium text-slate-500">Ketinggian Air</span>
+          <span class="text-blue-500 text-lg">💧</span>
+        </div>
+        <div class="mt-2">
+          <span id="val-tinggi" class="text-3xl font-bold text-slate-900">12.0</span>
+          <span class="text-sm text-slate-400 font-normal">cm</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-2">Dari dasar saluran tertutup</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div class="flex justify-between items-start">
+          <span class="text-sm font-medium text-slate-500">Jarak Sensor</span>
+          <span class="text-blue-500 text-lg">📏</span>
+        </div>
+        <div class="mt-2">
+          <span id="val-jarak" class="text-3xl font-bold text-slate-900">38.0</span>
+          <span class="text-sm text-slate-400 font-normal">cm</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-2">HC-SR04 ke permukaan air</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div class="flex justify-between items-start">
+          <span class="text-sm font-medium text-slate-500">Persentase Ketinggian</span>
+          <span class="text-blue-500 text-lg font-bold">%</span>
+        </div>
+        <div class="mt-2">
+          <span id="val-persen" class="text-3xl font-bold text-slate-900">24.0</span>
+          <span class="text-sm text-slate-400 font-normal">%</span>
+        </div>
+        <div class="w-full bg-slate-100 h-2 rounded-full mt-3 overflow-hidden">
+          <div id="bar-persen" class="bg-emerald-500 h-full rounded-full" style="width: 24%"></div>
+        </div>
+      </div>
+
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div class="flex justify-between items-start">
+          <span class="text-sm font-medium text-slate-500">Debit Aliran Air</span>
+          <span class="text-blue-500 text-lg">💨</span>
+        </div>
+        <div class="mt-2">
+          <span id="val-debit" class="text-3xl font-bold text-slate-900">16.8</span>
+          <span class="text-sm text-slate-400 font-normal">L/min</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-2">Sensor YF-S201</p>
+      </div>
+    </section>
+
+    <!-- STATUS SISTEM METRIK -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+      <div class="flex justify-between items-start">
+        <span class="text-sm font-medium text-slate-500">Status Sistem</span>
+        <span class="text-slate-400 text-lg">📈</span>
+      </div>
+      <h3 class="text-2xl font-extrabold text-emerald-600 mt-2">Aman</h3>
+      <p class="text-xs text-slate-400 mt-1">Ambang: ≤40% · 41–70% · >70%</p>
+    </div>
+
+    <!-- 5. GRAFIK DERET WAKTU CHARTJS -->
+    <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900">Grafik Deret Waktu</h2>
+          <p class="text-slate-500 text-sm">Ketinggian air (cm) dan debit aliran (L/min) secara real-time</p>
+        </div>
+        <button class="px-3 py-1.5 border border-slate-200 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-50">Reset grafik</button>
+      </div>
+      <div class="h-64">
+        <canvas id="realtimeChart"></canvas>
+      </div>
+    </section>
+
+    <!-- 6. PANEL SIMULASI DEMO MODE -->
+    <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-6">
+      <div>
+        <h2 class="text-lg font-bold text-slate-900">Panel Simulasi (Demo Mode)</h2>
+        <p class="text-slate-500 text-sm">Uji perubahan sensor di browser tanpa perangkat fisik.</p>
+      </div>
+
+      <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 flex justify-between items-center">
+        <div>
+          <h3 class="font-bold text-slate-800 text-sm">Auto Demo</h3>
+          <p class="text-xs text-slate-500">Siklus naik-turun otomatis</p>
+        </div>
+        <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl text-xs transition">Mulai Auto Demo</button>
+      </div>
+
+      <div>
+        <div class="flex justify-between items-center text-sm mb-2">
+          <span class="font-semibold text-slate-700">Simulasi ketinggian air</span>
+          <span class="text-slate-500 font-mono text-xs"><span id="lbl-sim-tinggi">12.0</span> cm</span>
+        </div>
+        <input id="slider-tinggi" type="range" min="0" max="50
