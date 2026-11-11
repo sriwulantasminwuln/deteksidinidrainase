@@ -3,377 +3,106 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard IoT · Deteksi Dini Penyumbatan Drainase Tertutup</title>
+  <title>Dashboard IoT - Deteksi Dini Penyumbatan Drainase Tertutup</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            brand: {
-              50: "#eff6ff",
-              100: "#dbeafe",
-              500: "#2563eb",
-              600: "#1d4ed8",
-              sky: "#0284c7"
-            }
-          },
-          boxShadow: {
-            card: "0 1px 2px rgba(15,23,42,.05), 0 8px 24px rgba(15,23,42,.04)"
-          },
-          fontFamily: {
-            sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"]
+            brand: { 50: '#f0f9ff', 500: '#0284c7', 600: '#0369a1', 700: '#075985' }
           }
         }
       }
-    };
+    }
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-  <style>
-    body { background: linear-gradient(180deg, #f8fafc 0%, #ffffff 280px); }
-    .led {
-      width: 14px; height: 14px; border-radius: 9999px;
-      box-shadow: 0 0 0 4px rgba(148,163,184,.12);
-    }
-    .led-on-green { background: #86efac; box-shadow: 0 0 0 4px #dcfce7, 0 0 12px rgba(34,197,94,.35); }
-    .led-on-yellow { background: #fde68a; box-shadow: 0 0 0 4px #fef9c3, 0 0 12px rgba(234,179,8,.35); }
-    .led-on-red { background: #fca5a5; box-shadow: 0 0 0 4px #fee2e2, 0 0 12px rgba(239,68,68,.35); animation: pulse-soft 1.2s ease-in-out infinite; }
-    .led-off { background: #e2e8f0; }
-    .buzzer-on { animation: buzz 0.18s linear infinite; }
-    @keyframes pulse-soft {
-      0%, 100% { opacity: 1; }
-      50% { opacity: .55; }
-    }
-    @keyframes buzz {
-      0% { transform: rotate(0deg); }
-      25% { transform: rotate(-8deg); }
-      75% { transform: rotate(8deg); }
-      100% { transform: rotate(0deg); }
-    }
-    .water {
-      transition: height .45s ease, background .3s ease;
-    }
-    input[type="range"] {
-      accent-color: #2563eb;
-    }
-    pre.json-block {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 12.5px;
-      line-height: 1.55;
-    }
-  </style>
 </head>
-<body class="font-sans text-slate-900 antialiased min-h-screen">
-  <header class="border-b border-slate-200/80 bg-white/90 backdrop-blur sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col lg:flex-row lg:items-center gap-4">
-      <div class="flex items-start gap-3 flex-1">
-        <div class="h-11 w-11 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
-          <i data-lucide="waves" class="w-5 h-5 text-blue-600"></i>
-        </div>
-        <div>
-          <p class="text-[11px] font-semibold tracking-[0.16em] uppercase text-sky-600">Sistem IoT · Monitoring Real-Time</p>
-          <h1 class="text-lg sm:text-xl font-semibold text-slate-900 leading-snug">
-            Deteksi Dini Penyumbatan Drainase Tertutup Berbasis Internet of Things
-          </h1>
-        </div>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+  <div class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+    
+    <!-- HEADER -->
+    <header class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900">Deteksi Dini Penyumbatan Drainase Tertutup</h1>
+        <p class="text-slate-500 text-sm mt-1">Sistem Pemantauan Berbasis Internet of Things (IoT)</p>
       </div>
-      <div class="flex flex-wrap items-center gap-3">
-        <div class="rounded-full bg-slate-50 border border-slate-200 px-3 py-1.5 text-xs text-slate-600 flex items-center gap-2">
-          <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
-          <span id="clockLabel">--:--:--</span>
-        </div>
-        <div id="modeBadge" class="rounded-full bg-blue-50 border border-blue-100 text-blue-700 px-3 py-1.5 text-xs font-medium">
-          Demo Mode · ESP32 Simulator
-        </div>
-        <div id="hwBadge" class="rounded-full bg-slate-50 border border-slate-200 text-slate-600 px-3 py-1.5 text-xs font-medium">
-          Hardware: menunggu
-        </div>
+      <div class="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full text-xs font-semibold">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        Sistem Online
       </div>
-    </div>
-  </header>
+    </header>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
-    <!-- Tim -->
-    <section class="rounded-2xl bg-white border border-slate-200 shadow-card p-5">
-      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">Tim Penyusun</p>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div class="rounded-xl bg-slate-50 border border-slate-100 px-4 py-3">
-          <p class="text-sm font-semibold text-slate-800">Sri Wulan</p>
-          <p class="text-xs text-slate-500 mt-0.5">Anggota tim</p>
+    <!-- TIM PENYUSUN -->
+    <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+      <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">TIM PENYUSUN</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+          <p class="font-bold text-slate-900">Sri Wulan</p>
+          <p class="text-xs text-slate-500">Anggota tim</p>
         </div>
-        <div class="rounded-xl bg-slate-50 border border-slate-100 px-4 py-3">
-          <p class="text-sm font-semibold text-slate-800">Ariani Estevani</p>
-          <p class="text-xs text-slate-500 mt-0.5">Anggota tim</p>
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+          <p class="font-bold text-slate-900">Ariani Estevani</p>
+          <p class="text-xs text-slate-500">Anggota tim</p>
         </div>
-        <div class="rounded-xl bg-slate-50 border border-slate-100 px-4 py-3">
-          <p class="text-sm font-semibold text-slate-800">Fadil Ikhsan Al Ma'aruf</p>
-          <p class="text-xs text-slate-500 mt-0.5">Anggota tim</p>
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+          <p class="font-bold text-slate-900">Fadil Ikhsan Al Ma'aruf</p>
+          <p class="text-xs text-slate-500">Anggota tim</p>
         </div>
-        <div class="rounded-xl bg-slate-50 border border-slate-100 px-4 py-3">
-          <p class="text-sm font-semibold text-slate-800">Ika Ramadani</p>
-          <p class="text-xs text-slate-500 mt-0.5">Anggota tim</p>
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+          <p class="font-bold text-slate-900">Ika Ramadani</p>
+          <p class="text-xs text-slate-500">Anggota tim</p>
         </div>
       </div>
     </section>
 
-    <!-- Integrasi Blynk -->
-    <section class="rounded-2xl bg-white border border-slate-200 shadow-card p-5 space-y-4">
-      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-        <div>
-          <h2 class="text-base font-semibold text-slate-900">Koneksi Blynk REST API</h2>
-          <p class="text-sm text-slate-500 mt-1">Ambil data real-time dari ESP32 melalui Blynk Cloud. Tempel Auth Token perangkat, lalu sambungkan.</p>
-        </div>
-        <p id="blynkStatus" class="text-xs font-medium text-slate-500">Belum tersambung</p>
+    <!-- CARA KERJA SISTEM -->
+    <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+      <div>
+        <h2 class="text-lg font-bold text-slate-900">Cara Kerja Sistem</h2>
+        <p class="text-slate-500 text-sm">Alur perangkat keras hingga dashboard pemantauan.</p>
       </div>
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-3">
-        <div class="lg:col-span-5">
-          <label for="blynkToken" class="text-xs font-medium text-slate-600">Auth Token</label>
-          <input id="blynkToken" type="password" autocomplete="off" placeholder="Tempel Auth Token Blynk di sini" class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-200" />
-        </div>
-        <div class="lg:col-span-3">
-          <label for="blynkServer" class="text-xs font-medium text-slate-600">Server Blynk</label>
-          <select id="blynkServer" class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-200">
-            <option value="https://sgp1.blynk.cloud" selected>Singapore (sgp1) — disarankan</option>
-            <option value="https://blynk.cloud">Global (blynk.cloud)</option>
-            <option value="https://fra1.blynk.cloud">Frankfurt (fra1)</option>
-            <option value="https://ny3.blynk.cloud">New York (ny3)</option>
-            <option value="https://blr1.blynk.cloud">Bangalore (blr1)</option>
-          </select>
-        </div>
-        <div class="lg:col-span-4 flex items-end gap-2">
-          <button id="btnConnect" type="button" class="flex-1 px-3 py-2 rounded-xl text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700">Sambungkan ESP32</button>
-          <button id="btnDemoMode" type="button" class="px-3 py-2 rounded-xl text-sm font-medium border border-slate-200 text-slate-600 hover:bg-slate-50">Demo</button>
-        </div>
-      </div>
-      <div class="rounded-xl bg-slate-50 border border-slate-100 p-3 text-xs text-slate-600 leading-relaxed">
-        <p class="font-semibold text-slate-700 mb-1">Pemetaan Virtual Pin ESP32 → Dashboard</p>
-        <p>V0 jarak HC-SR04 (cm) · V1 tinggi air (cm) · V2 persentase (%) · V3 debit YF-S201 (L/min) · V4 status (opsional: AMAN / WASPADA / TERSUMBAT)</p>
-        <p class="mt-1 font-mono text-[11px] text-slate-500">Blynk.virtualWrite(V0, jarak); Blynk.virtualWrite(V1, tinggi); Blynk.virtualWrite(V2, persen); Blynk.virtualWrite(V3, debit);</p>
-      </div>
-    </section>
-
-    <!-- Status banner -->
-    <section id="statusBanner" class="rounded-2xl border px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4 bg-emerald-50/70 border-emerald-100">
-      <div class="flex items-center gap-3 flex-1">
-        <div id="statusIconWrap" class="h-12 w-12 rounded-2xl bg-white/80 border border-white flex items-center justify-center">
-          <i data-lucide="shield-check" class="w-6 h-6 text-emerald-600"></i>
-        </div>
-        <div>
-          <p class="text-xs uppercase tracking-wider font-semibold text-slate-500">Status sistem saat ini</p>
-          <p id="statusTitle" class="text-xl font-semibold text-slate-900">Aman</p>
-          <p id="statusDesc" class="text-sm text-slate-600">Air lancar, indikator LED hijau aktif.</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-6">
-        <div class="text-center">
-          <p class="text-[11px] text-slate-500 mb-1">LED Hijau</p>
-          <div id="ledGreen" class="led led-on-green mx-auto"></div>
-        </div>
-        <div class="text-center">
-          <p class="text-[11px] text-slate-500 mb-1">LED Kuning</p>
-          <div id="ledYellow" class="led led-off mx-auto"></div>
-        </div>
-        <div class="text-center">
-          <p class="text-[11px] text-slate-500 mb-1">LED Merah</p>
-          <div id="ledRed" class="led led-off mx-auto"></div>
-        </div>
-        <div class="text-center">
-          <p class="text-[11px] text-slate-500 mb-1">Buzzer</p>
-          <div id="buzzerIcon" class="h-8 w-8 mx-auto rounded-full bg-slate-100 flex items-center justify-center">
-            <i data-lucide="bell-off" class="w-4 h-4 text-slate-400"></i>
+      <div class="space-y-3">
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-start gap-4">
+          <div class="p-2.5 bg-white rounded-lg border border-slate-200 text-brand-500">
+            ☀️
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Metric cards -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
-      <article class="rounded-2xl bg-white border border-slate-200 shadow-card p-4">
-        <div class="flex items-center justify-between mb-3">
-          <p class="text-xs font-medium text-slate-500">Ketinggian Air</p>
-          <i data-lucide="droplets" class="w-4 h-4 text-sky-600"></i>
-        </div>
-        <p class="text-2xl font-semibold tabular-nums"><span id="valTinggi">0.0</span> <span class="text-sm font-medium text-slate-400">cm</span></p>
-        <p class="text-xs text-slate-500 mt-2">Dari dasar saluran tertutup</p>
-      </article>
-      <article class="rounded-2xl bg-white border border-slate-200 shadow-card p-4">
-        <div class="flex items-center justify-between mb-3">
-          <p class="text-xs font-medium text-slate-500">Jarak Sensor</p>
-          <i data-lucide="ruler" class="w-4 h-4 text-blue-600"></i>
-        </div>
-        <p class="text-2xl font-semibold tabular-nums"><span id="valJarak">40.0</span> <span class="text-sm font-medium text-slate-400">cm</span></p>
-        <p class="text-xs text-slate-500 mt-2">HC-SR04 ke permukaan air</p>
-      </article>
-      <article class="rounded-2xl bg-white border border-slate-200 shadow-card p-4">
-        <div class="flex items-center justify-between mb-3">
-          <p class="text-xs font-medium text-slate-500">Persentase Ketinggian</p>
-          <i data-lucide="percent" class="w-4 h-4 text-blue-500"></i>
-        </div>
-        <p class="text-2xl font-semibold tabular-nums"><span id="valPersen">0.0</span> <span class="text-sm font-medium text-slate-400">%</span></p>
-        <div class="mt-3 h-1.5 rounded-full bg-slate-100 overflow-hidden">
-          <div id="barPersen" class="h-full rounded-full bg-emerald-300" style="width:0%"></div>
-        </div>
-      </article>
-      <article class="rounded-2xl bg-white border border-slate-200 shadow-card p-4">
-        <div class="flex items-center justify-between mb-3">
-          <p class="text-xs font-medium text-slate-500">Debit Aliran Air</p>
-          <i data-lucide="wind" class="w-4 h-4 text-sky-600"></i>
-        </div>
-        <p class="text-2xl font-semibold tabular-nums"><span id="valDebit">0.0</span> <span class="text-sm font-medium text-slate-400">L/min</span></p>
-        <p class="text-xs text-slate-500 mt-2">Sensor YF-S201</p>
-      </article>
-      <article class="rounded-2xl bg-white border border-slate-200 shadow-card p-4">
-        <div class="flex items-center justify-between mb-3">
-          <p class="text-xs font-medium text-slate-500">Status Sistem</p>
-          <i data-lucide="activity" class="w-4 h-4 text-slate-500"></i>
-        </div>
-        <p id="valStatus" class="text-2xl font-semibold text-emerald-700">Aman</p>
-        <p class="text-xs text-slate-500 mt-2">Ambang: ≤40% · 41–70% · &gt;70%</p>
-      </article>
-    </section>
-
-    <!-- Chart + simulasi -->
-    <section class="grid grid-cols-1 lg:grid-cols-5 gap-4">
-      <article class="lg:col-span-3 rounded-2xl bg-white border border-slate-200 shadow-card p-5">
-        <div class="flex items-start justify-between gap-3 mb-4">
           <div>
-            <h2 class="text-base font-semibold text-slate-900">Grafik Deret Waktu</h2>
-            <p class="text-sm text-slate-500">Ketinggian air (cm) dan debit aliran (L/min) secara real-time</p>
+            <span class="text-xs font-bold text-brand-600">01</span>
+            <h3 class="font-bold text-slate-900 text-sm">Panel Surya & Baterai</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Panel surya mengisi baterai melalui BMS, lalu buck converter 5V mensuplai daya ke ESP32.</p>
           </div>
-          <button id="btnClearChart" class="text-xs px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">
-            Reset grafik
-          </button>
         </div>
-        <div class="h-72">
-          <canvas id="tsChart"></canvas>
-        </div>
-      </article>
-
-      <article class="lg:col-span-2 rounded-2xl bg-white border border-slate-200 shadow-card p-5 space-y-5">
-        <div>
-          <h2 class="text-base font-semibold text-slate-900">Panel Simulasi (Demo Mode)</h2>
-          <p class="text-sm text-slate-500">Uji perubahan sensor di browser tanpa perangkat fisik.</p>
-        </div>
-
-        <div class="flex items-center justify-between rounded-xl bg-slate-50 border border-slate-100 px-3 py-2.5">
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-start gap-4">
+          <div class="p-2.5 bg-white rounded-lg border border-slate-200 text-brand-500">
+            📡
+          </div>
           <div>
-            <p class="text-sm font-medium text-slate-800">Auto Demo</p>
-            <p class="text-xs text-slate-500">Siklus naik-turun otomatis</p>
-          </div>
-          <button id="btnAuto" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700">
-            Mulai Auto Demo
-          </button>
-        </div>
-
-        <div>
-          <div class="flex items-center justify-between mb-2">
-            <label for="sliderTinggi" class="text-sm font-medium text-slate-700">Simulasi ketinggian air</label>
-            <span class="text-xs text-slate-500 tabular-nums"><span id="sliderLabel">12</span> cm</span>
-          </div>
-          <input id="sliderTinggi" type="range" min="0" max="50" step="0.1" value="12" class="w-full" />
-          <p class="text-[11px] text-slate-400 mt-1">Kedalaman saluran maksimum: 50 cm (posisi HC-SR04 di atap saluran)</p>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div class="rounded-xl border border-slate-100 bg-slate-50 p-3">
-            <p class="text-[11px] text-slate-500 mb-2">Visual saluran</p>
-            <div class="relative h-36 rounded-lg bg-slate-200/70 overflow-hidden border border-slate-200">
-              <div class="absolute inset-x-0 top-0 h-6 bg-white/70 border-b border-slate-200 flex items-center justify-center text-[10px] text-slate-500">
-                HC-SR04
-              </div>
-              <div id="waterFill" class="water absolute inset-x-0 bottom-0 bg-sky-300/70" style="height:24%"></div>
-            </div>
-          </div>
-          <div class="rounded-xl border border-slate-100 bg-slate-50 p-3 space-y-2">
-            <p class="text-[11px] text-slate-500">Parameter perangkat</p>
-            <p class="text-xs text-slate-600">Device ID</p>
-            <p class="text-sm font-semibold">DRN-ESP32-01</p>
-            <p class="text-xs text-slate-600 pt-1">Sampling</p>
-            <p class="text-sm font-semibold">1 detik</p>
-            <p class="text-xs text-slate-600 pt-1">Koneksi</p>
-            <p id="connLabel" class="text-sm font-semibold text-sky-700">Wi-Fi · Simulasi</p>
+            <span class="text-xs font-bold text-brand-600">02</span>
+            <h3 class="font-bold text-slate-900 text-sm">Sensor HC-SR04</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Mengukur jarak ke permukaan air untuk menghitung ketinggian dan indikasi sumbatan.</p>
           </div>
         </div>
-      </article>
-    </section>
-
-    <!-- Ambang status -->
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4">
-        <p class="text-sm font-semibold text-emerald-800">Aman</p>
-        <p class="text-xs text-emerald-800/80 mt-1">Persentase ≤ 40%</p>
-        <p class="text-sm text-slate-600 mt-2">Air lancar. LED hijau menyala. Buzzer mati.</p>
-      </div>
-      <div class="rounded-2xl border border-amber-100 bg-amber-50/70 p-4">
-        <p class="text-sm font-semibold text-amber-800">Waspada</p>
-        <p class="text-xs text-amber-800/80 mt-1">Persentase 41–70%</p>
-        <p class="text-sm text-slate-600 mt-2">Air mulai naik. LED kuning menyala. Perlu pemantauan.</p>
-      </div>
-      <div class="rounded-2xl border border-rose-100 bg-rose-50/70 p-4">
-        <p class="text-sm font-semibold text-rose-800">Bahaya / Tersumbat</p>
-        <p class="text-xs text-rose-800/80 mt-1">Persentase &gt; 70%</p>
-        <p class="text-sm text-slate-600 mt-2">Potensi sumbatan. LED merah &amp; buzzer aktif. Notifikasi dikirim.</p>
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-start gap-4">
+          <div class="p-2.5 bg-white rounded-lg border border-slate-200 text-brand-500">
+            💧
+          </div>
+          <div>
+            <span class="text-xs font-bold text-brand-600">03</span>
+            <h3 class="font-bold text-slate-900 text-sm">Sensor YF-S201</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Mengukur debit aliran air yang melewati saluran (liter per menit).</p>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Cara kerja -->
-    <section class="rounded-2xl bg-white border border-slate-200 shadow-card p-5">
-      <h2 class="text-base font-semibold text-slate-900">Cara Kerja Sistem</h2>
-      <p class="text-sm text-slate-500 mt-1 mb-5">Alur perangkat keras hingga dashboard pemantauan.</p>
-      <ol class="grid grid-cols-1 md:grid-cols-5 gap-3">
-        <li class="rounded-xl border border-slate-100 bg-slate-50 p-4">
-          <div class="h-9 w-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center mb-3">
-            <i data-lucide="sun" class="w-4 h-4 text-sky-600"></i>
-          </div>
-          <p class="text-xs font-semibold text-blue-600 mb-1">01</p>
-          <p class="text-sm font-semibold text-slate-800">Panel Surya &amp; Baterai</p>
-          <p class="text-xs text-slate-500 mt-1 leading-relaxed">Panel surya mengisi baterai melalui BMS, lalu buck converter 5V mensuplai daya ke ESP32.</p>
-        </li>
-        <li class="rounded-xl border border-slate-100 bg-slate-50 p-4">
-          <div class="h-9 w-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center mb-3">
-            <i data-lucide="scan" class="w-4 h-4 text-blue-600"></i>
-          </div>
-          <p class="text-xs font-semibold text-blue-600 mb-1">02</p>
-          <p class="text-sm font-semibold text-slate-800">Sensor HC-SR04</p>
-          <p class="text-xs text-slate-500 mt-1 leading-relaxed">Mengukur jarak ke permukaan air untuk menghitung ketinggian dan indikasi sumbatan.</p>
-        </li>
-        <li class="rounded-xl border border-slate-100 bg-slate-50 p-4">
-          <div class="h-9 w-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center mb-3">
-            <i data-lucide="gauge" class="w-4 h-4 text-sky-600"></i>
-          </div>
-          <p class="text-xs font-semibold text-blue-600 mb-1">03</p>
-          <p class="text-sm font-semibold text-slate-800">Sensor YF-S201</p>
-          <p class="text-xs text-slate-500 mt-1 leading-relaxed">Mengukur debit aliran air yang melewati saluran (liter per menit).</p>
-        </li>
-        <li class="rounded-xl border border-slate-100 bg-slate-50 p-4">
-          <div class="h-9 w-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center mb-3">
-            <i data-lucide="cpu" class="w-4 h-4 text-blue-600"></i>
-          </div>
-          <p class="text-xs font-semibold text-blue-600 mb-1">04</p>
-          <p class="text-sm font-semibold text-slate-800">ESP32</p>
-          <p class="text-xs text-slate-500 mt-1 leading-relaxed">Mengolah data, mengontrol LED/buzzer, lalu mengirim data melalui Wi-Fi.</p>
-        </li>
-        <li class="rounded-xl border border-slate-100 bg-slate-50 p-4">
-          <div class="h-9 w-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center mb-3">
-            <i data-lucide="monitor-smartphone" class="w-4 h-4 text-sky-600"></i>
-          </div>
-          <p class="text-xs font-semibold text-blue-600 mb-1">05</p>
-          <p class="text-sm font-semibold text-slate-800">Dashboard &amp; Blynk</p>
-          <p class="text-xs text-slate-500 mt-1 leading-relaxed">Dashboard web dan Blynk menerima data real-time untuk pemantauan dan notifikasi.</p>
-        </li>
-      </ol>
-    </section>
-
-    <!-- Database -->
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <article class="rounded-2xl bg-white border border-slate-200 shadow-card p-5">
-        <h2 class="text-base font-semibold text-slate-900">Skema Database</h2>
-        <p class="text-sm text-slate-500 mt-1 mb-4">Struktur JSON Firebase Realtime Database / Firestore untuk histori log penyumbatan.</p>
-        <pre class="json-block rounded-xl bg-slate-50 border border-slate-100 p-4 text-slate-700 overflow-x-auto">{
+    <!-- SKEMA DATABASE -->
+    <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+      <div>
+        <h2 class="text-lg font-bold text-slate-900">Skema Database</h2>
+        <p class="text-slate-500 text-sm">Struktur JSON Firebase Realtime Database / Firestore untuk histori log penyumbatan.</p>
+      </div>
+      <div class="bg-slate-900 text-slate-100 p-4 rounded-xl overflow-x-auto text-xs font-mono leading-relaxed">
+<pre>{
   "devices": {
     "DRN-ESP32-01": {
       "meta": {
@@ -383,11 +112,12 @@
       },
       "latest": {
         "device_id": "DRN-ESP32-01",
-        "timestamp": "2026-10-16T14:52:00+08:00",
-        "jarak_cm": 28.4,
-        "tinggi_air_cm": 21.6,
-        "persentase": 43.2,
-        "debit_air_lmin": 12.5,
+        "timestamp": "2026-11-11T13:03:45.365Z",
+        "time": "21.03.45",
+        "jarak_cm": 19.5,
+        "tinggi_air_cm": 30.5,
+        "persentase": 61,
+        "debit_air_lmin": 9.2,
         "status": "WASPADA"
       },
       "logs": {
@@ -395,542 +125,15 @@
           "device_id": "DRN-ESP32-01",
           "timestamp": "2026-10-16T14:51:00+08:00",
           "jarak_cm": 38.0,
-          "tinggi_air_cm": 12.0,
-          "persentase": 24.0,
-          "debit_air_lmin": 18.2,
-          "status": "AMAN"
+          "tinggi_air_cm": 12.0
         }
       }
     }
   }
 }</pre>
-        <ul class="mt-4 text-xs text-slate-500 space-y-1">
-          <li><span class="font-medium text-slate-700">device_id</span> — string</li>
-          <li><span class="font-medium text-slate-700">timestamp</span> — datetime ISO 8601</li>
-          <li><span class="font-medium text-slate-700">jarak_cm</span> — float (HC-SR04)</li>
-          <li><span class="font-medium text-slate-700">tinggi_air_cm</span> — float</li>
-          <li><span class="font-medium text-slate-700">persentase</span> — float</li>
-          <li><span class="font-medium text-slate-700">debit_air_lmin</span> — float (YF-S201)</li>
-          <li><span class="font-medium text-slate-700">status</span> — AMAN / WASPADA / TERSUMBAT</li>
-        </ul>
-      </article>
-
-      <article class="rounded-2xl bg-white border border-slate-200 shadow-card p-5">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <h2 class="text-base font-semibold text-slate-900">Log Histori (Simulasi Firebase)</h2>
-            <p class="text-sm text-slate-500">Entri baru saat status berubah atau setiap 8 sampel.</p>
-          </div>
-        </div>
-        <div class="overflow-x-auto rounded-xl border border-slate-100">
-          <table class="min-w-full text-left text-sm">
-            <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-              <tr>
-                <th class="px-3 py-2 font-medium">Waktu</th>
-                <th class="px-3 py-2 font-medium">Tinggi</th>
-                <th class="px-3 py-2 font-medium">%</th>
-                <th class="px-3 py-2 font-medium">Debit</th>
-                <th class="px-3 py-2 font-medium">Status</th>
-              </tr>
-            </thead>
-            <tbody id="logBody" class="divide-y divide-slate-100 text-slate-700"></tbody>
-          </table>
-        </div>
-        <pre id="liveJson" class="json-block mt-4 rounded-xl bg-slate-50 border border-slate-100 p-4 text-slate-700 overflow-x-auto max-h-48"></pre>
-      </article>
+      </div>
     </section>
-  </main>
 
-  <footer class="border-t border-slate-200 mt-4">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-      <p class="text-sm font-semibold text-slate-800">Deteksi Dini Penyumbatan Drainase Tertutup Berbasis Internet of Things</p>
-      <p class="text-sm text-slate-500 mt-1">Dashboard monitoring mandiri · Blynk REST API / Demo Mode</p>
-      <p class="text-sm text-slate-600 mt-4">
-        Tim penyusun: Sri Wulan · Ariani Estevani · Fadil Ikhsan Al Ma'aruf · Ika Ramadani
-      </p>
-    </div>
-  </footer>
-
-  <script>
-    /**
-     * Tempel Auth Token Blynk di sini agar dashboard langsung Live.
-     * Token ada di Blynk Console → Device Info → Auth Token.
-     */
-    const BLYNK_AUTH_TOKEN = "";
-    const BLYNK_SERVER = "https://sgp1.blynk.cloud";
-    const BLYNK_PINS = { jarak: "v0", tinggi: "v1", persen: "v2", debit: "v3", status: "v4" };
-
-    const MAX_DEPTH = 50;
-    const DEVICE_ID = "DRN-ESP32-01";
-    const MAX_POINTS = 40;
-
-    const els = {
-      clock: document.getElementById("clockLabel"),
-      tinggi: document.getElementById("valTinggi"),
-      jarak: document.getElementById("valJarak"),
-      persen: document.getElementById("valPersen"),
-      debit: document.getElementById("valDebit"),
-      status: document.getElementById("valStatus"),
-      bar: document.getElementById("barPersen"),
-      banner: document.getElementById("statusBanner"),
-      title: document.getElementById("statusTitle"),
-      desc: document.getElementById("statusDesc"),
-      ledG: document.getElementById("ledGreen"),
-      ledY: document.getElementById("ledYellow"),
-      ledR: document.getElementById("ledRed"),
-      buzzer: document.getElementById("buzzerIcon"),
-      slider: document.getElementById("sliderTinggi"),
-      sliderLabel: document.getElementById("sliderLabel"),
-      water: document.getElementById("waterFill"),
-      btnAuto: document.getElementById("btnAuto"),
-      btnClear: document.getElementById("btnClearChart"),
-      logBody: document.getElementById("logBody"),
-      liveJson: document.getElementById("liveJson"),
-      iconWrap: document.getElementById("statusIconWrap"),
-      modeBadge: document.getElementById("modeBadge"),
-      hwBadge: document.getElementById("hwBadge"),
-      connLabel: document.getElementById("connLabel"),
-      token: document.getElementById("blynkToken"),
-      server: document.getElementById("blynkServer"),
-      btnConnect: document.getElementById("btnConnect"),
-      btnDemoMode: document.getElementById("btnDemoMode"),
-      blynkStatus: document.getElementById("blynkStatus")
-    };
-
-    let autoDemo = false;
-    let liveMode = false;
-    let autoT = 0;
-    let sampleCount = 0;
-    let lastStatus = "";
-    let hwCheckTick = 0;
-    const logs = [];
-
-    const savedToken = localStorage.getItem("blynk_auth_token") || BLYNK_AUTH_TOKEN;
-    const savedServer = localStorage.getItem("blynk_server") || BLYNK_SERVER;
-    els.token.value = savedToken;
-    els.server.value = savedServer;
-
-    function currentToken() {
-      return (els.token.value || BLYNK_AUTH_TOKEN || "").trim();
-    }
-
-    function currentServer() {
-      return (els.server.value || BLYNK_SERVER).replace(/\/$/, "");
-    }
-
-    function setModeUI(mode, hwOnline) {
-      if (mode === "live") {
-        els.modeBadge.textContent = "Live · Blynk REST API";
-        els.modeBadge.className = "rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 px-3 py-1.5 text-xs font-medium";
-        els.connLabel.textContent = "Wi-Fi · Blynk Cloud";
-        els.connLabel.className = "text-sm font-semibold text-emerald-700";
-        els.slider.disabled = true;
-        els.btnAuto.disabled = true;
-        els.btnAuto.classList.add("opacity-50", "cursor-not-allowed");
-      } else {
-        els.modeBadge.textContent = "Demo Mode · ESP32 Simulator";
-        els.modeBadge.className = "rounded-full bg-blue-50 border border-blue-100 text-blue-700 px-3 py-1.5 text-xs font-medium";
-        els.connLabel.textContent = "Wi-Fi · Simulasi";
-        els.connLabel.className = "text-sm font-semibold text-sky-700";
-        els.slider.disabled = false;
-        els.btnAuto.disabled = false;
-        els.btnAuto.classList.remove("opacity-50", "cursor-not-allowed");
-      }
-      if (hwOnline === true) {
-        els.hwBadge.textContent = "Hardware: online";
-        els.hwBadge.className = "rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 px-3 py-1.5 text-xs font-medium";
-      } else if (hwOnline === false && mode === "live") {
-        els.hwBadge.textContent = "Hardware: offline";
-        els.hwBadge.className = "rounded-full bg-amber-50 border border-amber-100 text-amber-800 px-3 py-1.5 text-xs font-medium";
-      } else {
-        els.hwBadge.textContent = "Hardware: menunggu";
-        els.hwBadge.className = "rounded-full bg-slate-50 border border-slate-200 text-slate-600 px-3 py-1.5 text-xs font-medium";
-      }
-    }
-
-    function nowISO() {
-      return new Date().toISOString();
-    }
-
-    function formatTime(d) {
-      return d.toLocaleTimeString("id-ID", { hour12: false });
-    }
-
-    function classify(persen) {
-      if (persen <= 40) {
-        return {
-          key: "AMAN",
-          label: "Aman",
-          desc: "Air lancar, indikator LED hijau aktif.",
-          banner: "bg-emerald-50/70 border-emerald-100",
-          text: "text-emerald-700",
-          bar: "bg-emerald-300",
-          icon: "shield-check",
-          iconColor: "text-emerald-600"
-        };
-      }
-      if (persen <= 70) {
-        return {
-          key: "WASPADA",
-          label: "Waspada",
-          desc: "Air mulai naik, indikator LED kuning aktif.",
-          banner: "bg-amber-50/70 border-amber-100",
-          text: "text-amber-800",
-          bar: "bg-amber-300",
-          icon: "alert-triangle",
-          iconColor: "text-amber-600"
-        };
-      }
-      return {
-        key: "TERSUMBAT",
-        label: "Bahaya / Tersumbat",
-        desc: "Terjadi potensi sumbatan. LED merah dan buzzer aktif.",
-        banner: "bg-rose-50/70 border-rose-100",
-        text: "text-rose-800",
-          bar: "bg-rose-300",
-          icon: "siren",
-          iconColor: "text-rose-600"
-      };
-    }
-
-    function debitFromLevel(tinggi, persen) {
-      const base = 22 - persen * 0.22;
-      const noise = (Math.random() - 0.5) * 1.4;
-      return Math.max(0.3, +(base + noise).toFixed(1));
-    }
-
-    function setLeds(key) {
-      els.ledG.className = "led mx-auto " + (key === "AMAN" ? "led-on-green" : "led-off");
-      els.ledY.className = "led mx-auto " + (key === "WASPADA" ? "led-on-yellow" : "led-off");
-      els.ledR.className = "led mx-auto " + (key === "TERSUMBAT" ? "led-on-red" : "led-off");
-      const on = key === "TERSUMBAT";
-      els.buzzer.className = "h-8 w-8 mx-auto rounded-full flex items-center justify-center " +
-        (on ? "bg-rose-100 buzzer-on" : "bg-slate-100");
-      els.buzzer.innerHTML = on
-        ? '<i data-lucide="bell-ring" class="w-4 h-4 text-rose-600"></i>'
-        : '<i data-lucide="bell-off" class="w-4 h-4 text-slate-400"></i>';
-      lucide.createIcons({ nodes: [els.buzzer] });
-    }
-
-    function pushLog(record) {
-      logs.unshift(record);
-      if (logs.length > 12) logs.pop();
-      els.logBody.innerHTML = logs.map(function (r) {
-        const tone = r.status === "AMAN"
-          ? "bg-emerald-50 text-emerald-700"
-          : r.status === "WASPADA"
-            ? "bg-amber-50 text-amber-800"
-            : "bg-rose-50 text-rose-700";
-        return "<tr>" +
-          "<td class='px-3 py-2 whitespace-nowrap text-xs text-slate-500'>" + r.time + "</td>" +
-          "<td class='px-3 py-2 tabular-nums'>" + r.tinggi_air_cm.toFixed(1) + "</td>" +
-          "<td class='px-3 py-2 tabular-nums'>" + r.persentase.toFixed(1) + "</td>" +
-          "<td class='px-3 py-2 tabular-nums'>" + r.debit_air_lmin.toFixed(1) + "</td>" +
-          "<td class='px-3 py-2'><span class='text-[11px] font-medium px-2 py-0.5 rounded-full " + tone + "'>" + r.status + "</span></td>" +
-          "</tr>";
-      }).join("");
-    }
-
-    const ctx = document.getElementById("tsChart");
-    const chart = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: [],
-        datasets: [
-          {
-            label: "Ketinggian air (cm)",
-            data: [],
-            borderColor: "#2563eb",
-            backgroundColor: "rgba(37,99,235,0.08)",
-            tension: 0.35,
-            fill: true,
-            pointRadius: 0,
-            borderWidth: 2,
-            yAxisID: "y"
-          },
-          {
-            label: "Debit aliran (L/min)",
-            data: [],
-            borderColor: "#0284c7",
-            backgroundColor: "rgba(2,132,199,0.06)",
-            tension: 0.35,
-            fill: false,
-            pointRadius: 0,
-            borderWidth: 2,
-            borderDash: [5, 4],
-            yAxisID: "y1"
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { mode: "index", intersect: false },
-        plugins: {
-          legend: {
-            labels: { boxWidth: 12, color: "#475569", font: { size: 12 } }
-          }
-        },
-        scales: {
-          x: {
-            ticks: { color: "#94a3b8", maxRotation: 0, autoSkip: true, maxTicksLimit: 8 },
-            grid: { color: "#f1f5f9" }
-          },
-          y: {
-            position: "left",
-            suggestedMin: 0,
-            suggestedMax: MAX_DEPTH,
-            ticks: { color: "#94a3b8" },
-            grid: { color: "#f1f5f9" },
-            title: { display: true, text: "cm", color: "#64748b" }
-          },
-          y1: {
-            position: "right",
-            suggestedMin: 0,
-            suggestedMax: 25,
-            ticks: { color: "#94a3b8" },
-            grid: { drawOnChartArea: false },
-            title: { display: true, text: "L/min", color: "#64748b" }
-          }
-        }
-      }
-    });
-
-    function applyReading(tinggi, live) {
-      tinggi = Math.min(MAX_DEPTH, Math.max(0, Number(tinggi) || 0));
-      live = live || {};
-      const jarak = live.jarak != null ? Number(live.jarak) : MAX_DEPTH - tinggi;
-      const persen = live.persen != null ? Number(live.persen) : (tinggi / MAX_DEPTH) * 100;
-      const debit = live.debit != null ? Number(live.debit) : debitFromLevel(tinggi, persen);
-      const st = classify(persen);
-      const t = new Date();
-
-      els.tinggi.textContent = tinggi.toFixed(1);
-      els.jarak.textContent = jarak.toFixed(1);
-      els.persen.textContent = persen.toFixed(1);
-      els.debit.textContent = debit.toFixed(1);
-      els.status.textContent = st.label;
-      els.status.className = "text-2xl font-semibold " + st.text;
-      els.bar.style.width = Math.min(100, Math.max(0, persen)).toFixed(1) + "%";
-      els.bar.className = "h-full rounded-full " + st.bar;
-      els.title.textContent = st.label;
-      els.desc.textContent = st.desc;
-      els.banner.className = "rounded-2xl border px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4 " + st.banner;
-      els.water.style.height = Math.min(100, Math.max(0, persen)) + "%";
-      els.sliderLabel.textContent = tinggi.toFixed(1);
-      if (!autoDemo) els.slider.value = String(tinggi.toFixed(1));
-
-      setLeds(st.key);
-      els.iconWrap.innerHTML = '<i data-lucide="' + st.icon + '" class="w-6 h-6 ' + st.iconColor + '"></i>';
-      lucide.createIcons({ nodes: [els.iconWrap] });
-
-      chart.data.labels.push(formatTime(t));
-      chart.data.datasets[0].data.push(+tinggi.toFixed(2));
-      chart.data.datasets[1].data.push(+debit.toFixed(2));
-      if (chart.data.labels.length > MAX_POINTS) {
-        chart.data.labels.shift();
-        chart.data.datasets[0].data.shift();
-        chart.data.datasets[1].data.shift();
-      }
-      chart.update("none");
-
-      const record = {
-        device_id: DEVICE_ID,
-        timestamp: t.toISOString(),
-        time: formatTime(t),
-        jarak_cm: +jarak.toFixed(2),
-        tinggi_air_cm: +tinggi.toFixed(2),
-        persentase: +persen.toFixed(2),
-        debit_air_lmin: +Number(debit).toFixed(2),
-        status: st.key,
-        source: liveMode ? "blynk" : "demo"
-      };
-
-      els.liveJson.textContent = JSON.stringify({ latest: record }, null, 2);
-
-      sampleCount += 1;
-      if (st.key !== lastStatus || sampleCount % 8 === 0) {
-        pushLog(record);
-        lastStatus = st.key;
-      }
-    }
-
-    function parsePinValue(payload, pin) {
-      if (payload == null) return null;
-      const key = String(pin).toLowerCase();
-      const alt = key.replace(/^v/, "");
-      if (Array.isArray(payload)) {
-        const idx = Number(alt);
-        if (!Number.isNaN(idx) && payload[idx] != null && payload[idx] !== "") return payload[idx];
-        return null;
-      }
-      if (typeof payload === "object") {
-        const candidates = [key, key.toUpperCase(), alt, "V" + alt, pin];
-        for (let i = 0; i < candidates.length; i++) {
-          const k = candidates[i];
-          if (payload[k] != null && payload[k] !== "") return payload[k];
-        }
-      }
-      if (typeof payload === "number" || typeof payload === "string") return payload;
-      return null;
-    }
-
-    function toNumber(value) {
-      if (value == null || value === "") return null;
-      const n = parseFloat(String(value).replace(",", "."));
-      return Number.isFinite(n) ? n : null;
-    }
-
-    async function fetchBlynkJson(url) {
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      const text = await res.text();
-      try {
-        return JSON.parse(text);
-      } catch (e) {
-        return text.trim();
-      }
-    }
-
-    async function checkHardware(token, server) {
-      try {
-        const data = await fetchBlynkJson(server + "/external/api/isHardwareConnected?token=" + encodeURIComponent(token));
-        const online = data === true || data === "true";
-        setModeUI("live", online);
-        return online;
-      } catch (e) {
-        setModeUI("live", false);
-        return false;
-      }
-    }
-
-    async function pullBlynk() {
-      const token = currentToken();
-      const server = currentServer();
-      if (!token) throw new Error("Auth Token kosong");
-
-      const qs = "token=" + encodeURIComponent(token) +
-        "&" + BLYNK_PINS.jarak +
-        "&" + BLYNK_PINS.tinggi +
-        "&" + BLYNK_PINS.persen +
-        "&" + BLYNK_PINS.debit +
-        "&" + BLYNK_PINS.status;
-
-      let payload;
-      try {
-        payload = await fetchBlynkJson(server + "/external/api/get?" + qs);
-      } catch (e) {
-        payload = await fetchBlynkJson(server + "/external/api/getAll?token=" + encodeURIComponent(token));
-      }
-
-      const jarak = toNumber(parsePinValue(payload, BLYNK_PINS.jarak));
-      let tinggi = toNumber(parsePinValue(payload, BLYNK_PINS.tinggi));
-      let persen = toNumber(parsePinValue(payload, BLYNK_PINS.persen));
-      const debit = toNumber(parsePinValue(payload, BLYNK_PINS.debit));
-
-      if (tinggi == null && jarak != null) tinggi = MAX_DEPTH - jarak;
-      if (tinggi == null && persen != null) tinggi = (persen / 100) * MAX_DEPTH;
-      if (tinggi == null) throw new Error("Pin V0–V2 belum berisi data");
-      if (persen == null) persen = (tinggi / MAX_DEPTH) * 100;
-
-      applyReading(tinggi, { jarak: jarak, persen: persen, debit: debit });
-      els.blynkStatus.textContent = "Live · data ESP32 diterima";
-      els.blynkStatus.className = "text-xs font-medium text-emerald-700";
-    }
-
-    async function connectBlynk() {
-      const token = currentToken();
-      if (!token) {
-        els.blynkStatus.textContent = "Isi Auth Token Blynk terlebih dahulu";
-        els.blynkStatus.className = "text-xs font-medium text-rose-700";
-        return;
-      }
-      localStorage.setItem("blynk_auth_token", token);
-      localStorage.setItem("blynk_server", currentServer());
-      liveMode = true;
-      autoDemo = false;
-      els.btnAuto.textContent = "Mulai Auto Demo";
-      els.btnAuto.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 opacity-50 cursor-not-allowed";
-      els.blynkStatus.textContent = "Menyambungkan ke Blynk Cloud...";
-      els.blynkStatus.className = "text-xs font-medium text-sky-700";
-      setModeUI("live", null);
-      try {
-        await checkHardware(token, currentServer());
-        await pullBlynk();
-      } catch (err) {
-        els.blynkStatus.textContent = "Gagal: " + (err.message || "tidak dapat membaca API Blynk");
-        els.blynkStatus.className = "text-xs font-medium text-rose-700";
-      }
-    }
-
-    function useDemoMode() {
-      liveMode = false;
-      setModeUI("demo", null);
-      els.blynkStatus.textContent = "Demo Mode aktif";
-      els.blynkStatus.className = "text-xs font-medium text-slate-500";
-    }
-
-    els.slider.addEventListener("input", function () {
-      if (liveMode) return;
-      autoDemo = false;
-      els.btnAuto.textContent = "Mulai Auto Demo";
-      els.btnAuto.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700";
-      applyReading(parseFloat(els.slider.value));
-    });
-
-    els.btnAuto.addEventListener("click", function () {
-      if (liveMode) return;
-      autoDemo = !autoDemo;
-      els.btnAuto.textContent = autoDemo ? "Hentikan Auto Demo" : "Mulai Auto Demo";
-      els.btnAuto.className = autoDemo
-        ? "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-white hover:bg-slate-800"
-        : "px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700";
-    });
-
-    els.btnClear.addEventListener("click", function () {
-      chart.data.labels = [];
-      chart.data.datasets[0].data = [];
-      chart.data.datasets[1].data = [];
-      chart.update();
-    });
-
-    els.btnConnect.addEventListener("click", connectBlynk);
-    els.btnDemoMode.addEventListener("click", useDemoMode);
-
-    function tickClock() {
-      els.clock.textContent = new Date().toLocaleString("id-ID", { hour12: false });
-    }
-
-    async function loop() {
-      tickClock();
-      if (liveMode) {
-        hwCheckTick += 1;
-        try {
-          await pullBlynk();
-          if (hwCheckTick % 8 === 0) await checkHardware(currentToken(), currentServer());
-        } catch (err) {
-          els.blynkStatus.textContent = "Live terputus: " + (err.message || "error jaringan") + " · coba cek token/server";
-          els.blynkStatus.className = "text-xs font-medium text-rose-700";
-        }
-        return;
-      }
-      let tinggi = parseFloat(els.slider.value);
-      if (autoDemo) {
-        autoT += 0.12;
-        tinggi = 18 + Math.sin(autoT) * 16 + Math.sin(autoT * 0.35) * 8;
-        tinggi = Math.min(MAX_DEPTH, Math.max(0, tinggi));
-        els.slider.value = String(tinggi.toFixed(1));
-      }
-      applyReading(tinggi);
-    }
-
-    lucide.createIcons();
-    if (savedToken) {
-      connectBlynk();
-    } else {
-      loop();
-    }
-    setInterval(loop, 1500);
-  </script>
+  </div>
 </body>
 </html>
