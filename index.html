@@ -4,51 +4,244 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Deteksi Dini Penyumbatan Drainase Tertutup Berbasis Internet of Things</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' }
-          }
-        }
-      }
-    }
-  </script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: #f8fafc; color: #1e293b; padding: 16px; }
+    .container { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+    .card { background: #ffffff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .header { display: flex; align-items: center; gap: 16px; }
+    .header-icon { width: 48px; height: 48px; background: #eff6ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #2563eb; }
+    .title-sub { font-size: 11px; font-weight: 700; color: #2563eb; letter-spacing: 0.5px; }
+    .title-main { font-size: 20px; font-weight: 700; color: #0f172a; margin-top: 2px; }
+    .badges { display: flex; gap: 10px; flex-wrap: wrap; }
+    .badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; background: #ffffff; border: 1px solid #cbd5e1; }
+    .badge-blue { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+    .badge-gray { background: #f1f5f9; border-color: #e2e8f0; color: #64748b; }
+    .banner-status { background: #ecfdf5; border: 1px solid #a7f3d0; padding: 20px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .status-title { font-size: 22px; font-weight: 800; color: #065f46; }
+    .status-desc { font-size: 13px; color: #047857; margin-top: 2px; }
+    .leds { display: flex; gap: 16px; font-size: 11px; text-align: center; color: #64748b; }
+    .led-dot { width: 16px; height: 16px; border-radius: 50%; margin: 4px auto 0; background: #cbd5e1; }
+    .led-green { background: #10b981; box-shadow: 0 0 8px #10b981; }
+    .led-yellow { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+    .led-red { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+    .grid-cards { display: grid; grid-cols: 1fr; gap: 16px; }
+    @media(min-width: 768px) { .grid-cards { grid-template-columns: 1fr 1fr; } }
+    .card-val { font-size: 28px; font-weight: 800; color: #0f172a; margin-top: 8px; }
+    .card-unit { font-size: 14px; font-weight: 400; color: #94a3b8; }
+    .card-desc { font-size: 12px; color: #94a3b8; margin-top: 6px; }
+    .progress-bar { width: 100%; height: 8px; background: #f1f5f9; border-radius: 10px; margin-top: 10px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 24%; background: #10b981; transition: width 0.3s; }
+    .btn { padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; }
+    .btn-primary { background: #2563eb; color: #fff; }
+    .btn-secondary { background: #fff; border: 1px solid #cbd5e1; color: #334155; }
+    input[type=range] { width: 100%; margin-top: 8px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+    th, td { padding: 10px 8px; border-bottom: 1px solid #f1f5f9; }
+    th { color: #94a3b8; font-size: 11px; }
+    .tag-status { padding: 3px 8px; border-radius: 12px; font-weight: 700; font-size: 10px; }
+    .tag-aman { background: #d1fae5; color: #065f46; }
+    .tag-waspada { background: #fef3c7; color: #92400e; }
+    .tag-bahaya { background: #ffe4e6; color: #9f1239; }
+  </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased p-4 md:p-8">
-  <div class="max-w-6xl mx-auto space-y-6">
+<body>
+  <div class="container">
 
-    <!-- HEADER REAL-TIME -->
-    <header class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-      <div class="flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-500 text-xl font-bold">
-          ≈
-        </div>
-        <div>
-          <span class="text-xs font-bold text-blue-500 tracking-wider uppercase">SISTEM IOT · MONITORING REAL-TIME</span>
-          <h1 class="text-xl md:text-2xl font-bold text-slate-900 mt-0.5">Deteksi Dini Penyumbatan Drainase Tertutup Berbasis Internet of Things</h1>
-        </div>
+    <!-- HEADER -->
+    <div class="card header">
+      <div class="header-icon">≈</div>
+      <div>
+        <div class="title-sub">SISTEM IOT · MONITORING REAL-TIME</div>
+        <div class="title-main">Deteksi Dini Penyumbatan Drainase Tertutup Berbasis Internet of Things</div>
       </div>
-    </header>
-
-    <!-- BADGES STATUS -->
-    <div class="flex flex-wrap items-center gap-3">
-      <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-200 text-slate-700 shadow-sm">
-        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span id="txt-timestamp">11/11/2026, 21.32.54</span>
-      </span>
-      <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-blue-50 border border-blue-200 text-blue-600">
-        Demo Mode · ESP32 Simulator
-      </span>
-      <span id="badge-hardware" class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
-        Hardware: menunggu
-      </span>
     </div>
 
-    <!-- KONEKSI BLYNK REST API -->
-    <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative">
-      <div class="flex justify-between items-start mb-4">
+    <!-- BADGES -->
+    <div class="badges">
+      <div class="badge">🟢 <span id="txt-time">11/11/2026, 21.32.54</span></div>
+      <div class="badge badge-blue">Demo Mode · ESP32 Simulator</div>
+      <div class="badge badge-gray">Hardware: menunggu</div>
+    </div>
+
+    <!-- BLYNK REST API -->
+    <div class="card" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; justify-content:space-between;">
         <div>
+          <h3 style="font-size:16px;">Koneksi Blynk REST API</h3>
+          <p style="font-size:12px; color:#64748b;">Ambil data real-time dari ESP32 melalui Blynk Cloud. Tempel Auth Token perangkat, lalu sambungkan.</p>
+        </div>
+        <span style="font-size:12px; color:#94a3b8;">Belum tersambung</span>
+      </div>
+      <input type="text" placeholder="Tempel Auth Token Blynk di sini" style="padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-size:13px; background:#f8fafc;">
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-primary" style="flex:1;">Sambungkan ESP32</button>
+        <button class="btn btn-secondary" onclick="toggleDemo()">Demo</button>
+      </div>
+    </div>
+
+    <!-- STATUS BANNER -->
+    <div id="banner" class="banner-status">
+      <div>
+        <span style="font-size:11px; font-weight:700; color:#047857;">STATUS SISTEM SAAT INI</span>
+        <div id="status-title" class="status-title">Aman</div>
+        <div id="status-desc" class="status-desc">Air lancar, indikator LED hijau aktif.</div>
+      </div>
+      <div class="leds">
+        <div>LED Hijau<div id="led-g" class="led-dot led-green"></div></div>
+        <div>LED Kuning<div id="led-y" class="led-dot"></div></div>
+        <div>LED Merah<div id="led-r" class="led-dot"></div></div>
+        <div>Buzzer<div style="margin-top:4px;">🔕</div></div>
+      </div>
+    </div>
+
+    <!-- KARTU SENSOR -->
+    <div class="grid-cards">
+      <div class="card">
+        <div style="font-size:13px; color:#64748b;">Ketinggian Air 💧</div>
+        <div class="card-val"><span id="v-tinggi">12.0</span> <span class="card-unit">cm</span></div>
+        <div class="card-desc">Dari dasar saluran tertutup</div>
+      </div>
+      <div class="card">
+        <div style="font-size:13px; color:#64748b;">Jarak Sensor 📏</div>
+        <div class="card-val"><span id="v-jarak">38.0</span> <span class="card-unit">cm</span></div>
+        <div class="card-desc">HC-SR04 ke permukaan air</div>
+      </div>
+      <div class="card">
+        <div style="font-size:13px; color:#64748b;">Persentase Ketinggian %</div>
+        <div class="card-val"><span id="v-persen">24.0</span> <span class="card-unit">%</span></div>
+        <div class="progress-bar"><div id="v-bar" class="progress-fill"></div></div>
+      </div>
+      <div class="card">
+        <div style="font-size:13px; color:#64748b;">Debit Aliran Air 💨</div>
+        <div class="card-val"><span id="v-debit">16.8</span> <span class="card-unit">L/min</span></div>
+        <div class="card-desc">Sensor YF-S201</div>
+      </div>
+    </div>
+
+    <!-- GRAFIK REALTIME -->
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+        <div>
+          <h3 style="font-size:16px;">Grafik Deret Waktu</h3>
+          <p style="font-size:12px; color:#64748b;">Ketinggian air (cm) dan debit aliran (L/min) secara real-time</p>
+        </div>
+        <button class="btn btn-secondary" onclick="resetChart()">Reset grafik</button>
+      </div>
+      <canvas id="canvasChart" height="200" style="width:100%;"></canvas>
+    </div>
+
+    <!-- PANEL SIMULASI -->
+    <div class="card" style="display:flex; flex-direction:column; gap:16px;">
+      <div>
+        <h3 style="font-size:16px;">Panel Simulasi (Demo Mode)</h3>
+        <p style="font-size:12px; color:#64748b;">Uji perubahan sensor di browser tanpa perangkat fisik.</p>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:12px; border-radius:10px;">
+        <div>
+          <strong style="font-size:13px;">Auto Demo</strong>
+          <p style="font-size:11px; color:#64748b;">Siklus naik-turun otomatis</p>
+        </div>
+        <button id="btn-demo" class="btn btn-primary" onclick="toggleDemo()">Mulai Auto Demo</button>
+      </div>
+      <div>
+        <div style="display:flex; justify-content:space-between; font-size:13px;">
+          <span>Simulasi ketinggian air</span>
+          <strong><span id="lbl-sim">12.0</span> cm</strong>
+        </div>
+        <input id="slider" type="range" min="0" max="50" value="12" step="0.5" oninput="onSlider(this.value)">
+      </div>
+    </div>
+
+    <!-- LOG FIREBASE -->
+    <div class="card">
+      <h3 style="font-size:16px; margin-bottom:10px;">Log Histori (Simulasi Firebase)</h3>
+      <table>
+        <thead>
+          <tr><th>WAKTU</th><th>TINGGI</th><th>%</th><th>DEBIT</th><th>STATUS</th></tr>
+        </thead>
+        <tbody id="log-body">
+          <tr><td>21.32.48</td><td>27.0</td><td>54.0</td><td>9.8</td><td><span class="tag-status tag-waspada">WASPADA</span></td></tr>
+          <tr><td>21.32.43</td><td>38.0</td><td>76.0</td><td>4.8</td><td><span class="tag-status tag-bahaya">BAHAYA</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script>
+    let tinggi = 12, isDemo = true, timer = null, dataTinggi = [30,32,35,38,36,47,38,27], dataDebit = [9,8.8,5.3,5.5,6.5,1.8,4.8,9.8];
+    const cvs = document.getElementById('canvasChart'), ctx = cvs.getContext('2d');
+
+    function drawChart() {
+      cvs.width = cvs.offsetWidth;
+      ctx.clearRect(0, 0, cvs.width, cvs.height);
+      const w = cvs.width, h = cvs.height, step = w / (dataTinggi.length - 1);
+      
+      // Line Tinggi
+      ctx.beginPath(); ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 3;
+      dataTinggi.forEach((v, i) => {
+        let x = i * step, y = h - (v / 50) * h;
+        if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // Line Debit
+      ctx.beginPath(); ctx.strokeStyle = '#0284c7'; ctx.lineWidth = 2; ctx.setLineDash([5, 5]);
+      dataDebit.forEach((v, i) => {
+        let x = i * step, y = h - (v / 25) * h;
+        if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke(); ctx.setLineDash([]);
+    }
+
+    function update(val) {
+      tinggi = parseFloat(val);
+      let persen = ((tinggi / 50) * 100).toFixed(1);
+      let jarak = (50 - tinggi).toFixed(1);
+      let debit = Math.max(0.5, (20 - (tinggi / 50) * 18)).toFixed(1);
+
+      document.getElementById('v-tinggi').innerText = tinggi.toFixed(1);
+      document.getElementById('lbl-sim').innerText = tinggi.toFixed(1);
+      document.getElementById('v-jarak').innerText = jarak;
+      document.getElementById('v-persen').innerText = persen;
+      document.getElementById('v-debit').innerText = debit;
+      document.getElementById('v-bar').style.width = persen + '%';
+
+      // Status
+      const b = document.getElementById('banner'), t = document.getElementById('status-title'), d = document.getElementById('status-desc');
+      const lg = document.getElementById('led-g'), ly = document.getElementById('led-y'), lr = document.getElementById('led-r');
+      lg.className = ly.className = lr.className = 'led-dot';
+
+      if(persen <= 40) {
+        b.style.background = '#ecfdf5'; t.innerText = 'Aman'; t.style.color = '#065f46'; d.innerText = 'Air lancar, indikator LED hijau aktif.'; lg.className = 'led-dot led-green';
+      } else if(persen <= 70) {
+        b.style.background = '#fffbeb'; t.innerText = 'Waspada'; t.style.color = '#92400e'; d.innerText = 'Air mulai naik, indikator LED kuning aktif.'; ly.className = 'led-dot led-yellow';
+      } else {
+        b.style.background = '#fff1f2'; t.innerText = 'Bahaya / Tersumbat'; t.style.color = '#9f1239'; d.innerText = 'Potensi sumbatan! LED merah & buzzer aktif.'; lr.className = 'led-dot led-red';
+      }
+
+      dataTinggi.push(tinggi); dataDebit.push(parseFloat(debit));
+      if(dataTinggi.length > 10) { dataTinggi.shift(); dataDebit.shift(); }
+      drawChart();
+    }
+
+    function onSlider(v) { isDemo = false; update(v); }
+    function toggleDemo() {
+      isDemo = !isDemo;
+      document.getElementById('btn-demo').innerText = isDemo ? "Hentikan Demo" : "Mulai Auto Demo";
+    }
+    function resetChart() { dataTinggi = [12]; dataDebit = [16]; drawChart(); }
+
+    setInterval(() => {
+      if(isDemo) {
+        let n = tinggi + (Math.random() * 4 - 2);
+        if(n > 48) n = 10; if(n < 5) n = 12;
+        update(n);
+      }
+    }, 1200);
+
+    window.onload = drawChart;
+  </script>
+</body>
+</html>
