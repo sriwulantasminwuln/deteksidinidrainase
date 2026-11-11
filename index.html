@@ -32,107 +32,21 @@
       </div>
     </header>
 
-    <!-- TIM PENYUSUN -->
-    <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-      <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">TIM PENYUSUN</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-          <p class="font-bold text-slate-900">Sri Wulan</p>
-          <p class="text-xs text-slate-500">Anggota tim</p>
-        </div>
-        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-          <p class="font-bold text-slate-900">Ariani Estevani</p>
-          <p class="text-xs text-slate-500">Anggota tim</p>
-        </div>
-        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-          <p class="font-bold text-slate-900">Fadil Ikhsan Al Ma'aruf</p>
-          <p class="text-xs text-slate-500">Anggota tim</p>
-        </div>
-        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-          <p class="font-bold text-slate-900">Ika Ramadani</p>
-          <p class="text-xs text-slate-500">Anggota tim</p>
-        </div>
+    <!-- KONTEN UTAMA DASHBOARD SENSOR -->
+    <main class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tinggi Air</h3>
+        <p class="text-3xl font-extrabold text-slate-900">-- <span class="text-sm font-normal text-slate-500">cm</span></p>
       </div>
-    </section>
-
-    <!-- CARA KERJA SISTEM -->
-    <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4">
-      <div>
-        <h2 class="text-lg font-bold text-slate-900">Cara Kerja Sistem</h2>
-        <p class="text-slate-500 text-sm">Alur perangkat keras hingga dashboard pemantauan.</p>
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Debit Air</h3>
+        <p class="text-3xl font-extrabold text-slate-900">-- <span class="text-sm font-normal text-slate-500">L/min</span></p>
       </div>
-      <div class="space-y-3">
-        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-start gap-4">
-          <div class="p-2.5 bg-white rounded-lg border border-slate-200 text-brand-500">
-            ☀️
-          </div>
-          <div>
-            <span class="text-xs font-bold text-brand-600">01</span>
-            <h3 class="font-bold text-slate-900 text-sm">Panel Surya & Baterai</h3>
-            <p class="text-xs text-slate-500 mt-0.5">Panel surya mengisi baterai melalui BMS, lalu buck converter 5V mensuplai daya ke ESP32.</p>
-          </div>
-        </div>
-        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-start gap-4">
-          <div class="p-2.5 bg-white rounded-lg border border-slate-200 text-brand-500">
-            📡
-          </div>
-          <div>
-            <span class="text-xs font-bold text-brand-600">02</span>
-            <h3 class="font-bold text-slate-900 text-sm">Sensor HC-SR04</h3>
-            <p class="text-xs text-slate-500 mt-0.5">Mengukur jarak ke permukaan air untuk menghitung ketinggian dan indikasi sumbatan.</p>
-          </div>
-        </div>
-        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-start gap-4">
-          <div class="p-2.5 bg-white rounded-lg border border-slate-200 text-brand-500">
-            💧
-          </div>
-          <div>
-            <span class="text-xs font-bold text-brand-600">03</span>
-            <h3 class="font-bold text-slate-900 text-sm">Sensor YF-S201</h3>
-            <p class="text-xs text-slate-500 mt-0.5">Mengukur debit aliran air yang melewati saluran (liter per menit).</p>
-          </div>
-        </div>
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Status Penyumbatan</h3>
+        <p class="text-3xl font-extrabold text-emerald-600">NORMAL</p>
       </div>
-    </section>
-
-    <!-- SKEMA DATABASE -->
-    <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4">
-      <div>
-        <h2 class="text-lg font-bold text-slate-900">Skema Database</h2>
-        <p class="text-slate-500 text-sm">Struktur JSON Firebase Realtime Database / Firestore untuk histori log penyumbatan.</p>
-      </div>
-      <div class="bg-slate-900 text-slate-100 p-4 rounded-xl overflow-x-auto text-xs font-mono leading-relaxed">
-<pre>{
-  "devices": {
-    "DRN-ESP32-01": {
-      "meta": {
-        "device_id": "DRN-ESP32-01",
-        "lokasi": "Drainase tertutup gerbang utara",
-        "kedalaman_max_cm": 50
-      },
-      "latest": {
-        "device_id": "DRN-ESP32-01",
-        "timestamp": "2026-11-11T13:03:45.365Z",
-        "time": "21.03.45",
-        "jarak_cm": 19.5,
-        "tinggi_air_cm": 30.5,
-        "persentase": 61,
-        "debit_air_lmin": 9.2,
-        "status": "WASPADA"
-      },
-      "logs": {
-        "-Nxyz001": {
-          "device_id": "DRN-ESP32-01",
-          "timestamp": "2026-10-16T14:51:00+08:00",
-          "jarak_cm": 38.0,
-          "tinggi_air_cm": 12.0
-        }
-      }
-    }
-  }
-}</pre>
-      </div>
-    </section>
+    </main>
 
   </div>
 </body>
